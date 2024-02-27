@@ -1,5 +1,6 @@
 <html lang="en">
 
+
 <head>
     <meta charset="UTF-8">
     <title>Your Page Title</title>
@@ -15,6 +16,7 @@
 
     <!-- Other head elements -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAz-IbTNgHhfweThsHnp9Tt452ymYd8e18"></script>
 </head>
 
 
@@ -214,8 +216,46 @@
             </div>
         </div>
     </div>
-    </div>
+    <div id="map" class="w-full h-96"></div>
+    <script>
+        function initMap() {
+            // Define the center of the map
+            var center = { lat: 40.7128, lng: -74.0060 }; // Example: New York City coordinates
 
+            // Create a new map instance
+            var map = new google.maps.Map(document.getElementById('map'), {
+                center: center,
+                zoom: 12 // Adjust the zoom level as needed
+            });
+
+            // Add a marker to the map
+            var marker = new google.maps.Marker({
+                position: center,
+                map: map,
+                title: 'Your location'
+            });
+        }
+
+        // Initialize the map when the page loads
+        google.maps.event.addDomListener(window, 'load', initMap);
+    </script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAz-IbTNgHhfweThsHnp9Tt452ymYd8e18"></script>
+<div id="map" class="w-full h-auto mb-10"></div>
+<script>
+    function initMap() {
+        var center = { lat: {{ $latitude }}, lng: {{ $longitude }} }; // Use the compacted values
+        var map = new google.maps.Map(document.getElementById('map'), {
+            center: center,
+            zoom: 12
+        });
+        var marker = new google.maps.Marker({
+            position: center,
+            map: map,
+            title: 'Your location'
+        });
+    }
+    google.maps.event.addDomListener(window, 'load', initMap);
+</script>
     @include('components.footer')
     <style>
         .darkened-image {

@@ -60,13 +60,9 @@
                     <li class="mb-4">
                         <a href="#"
                             class="text-gray-300 text-sm flex items-center hover:text-gray-100 before:contents-[''] before:w-1 before:h-1 before:rounded-full before:bg-gray-300 before:mr-3">
-                            Profile</a>
-                    </li>
-                    <li class="mb-4">
-                        <a href="#"
-                            class="text-gray-300 text-sm flex items-center hover:text-gray-100 before:contents-[''] before:w-1 before:h-1 before:rounded-full before:bg-gray-300 before:mr-3">
                             Logout</a>
                     </li>
+                </ul>
             </li>
         </ul>
     </div>
@@ -158,10 +154,10 @@
                             <!-- Added items-center class -->
                             <div class="flex flex-col">
                                 <div class="">
-                                    <h3 class="mx-auto text-3xl">Root</h3>
+                                    <h3 class="mx-auto text-3xl">Ticket</h3>
                                 </div>
                                 <div class="">
-                                    250
+                                    {{$ticketCount}}
                                 </div>
                             </div>
                         </div>

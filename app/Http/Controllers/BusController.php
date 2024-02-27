@@ -7,6 +7,8 @@ use App\Models\User;
 use App\Models\SelectSeat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
 
 class BusController extends Controller
 {
@@ -15,12 +17,14 @@ class BusController extends Controller
         // Retrieve all buses from the database
         $buses = Bus::all();
         $users= User::all();
+        $ticket= SelectSeat::all();
 
         $busesCount = Bus::count();
         $usersCount = User::count();
+        $ticketCount = SelectSeat::count();
 
         // Pass the retrieved buses data to the view
-        return view('admin.template', compact('buses','users','busesCount','usersCount'));
+        return view('admin.template', compact('buses','users','busesCount','usersCount','ticket','ticketCount'));
     }
 
     public function register(Request $request)
@@ -100,132 +104,176 @@ class BusController extends Controller
 
     public function seat(Request $request)
     {
-        // dd($request);
         if (Auth::check()) {
-            // Get the authenticated user's ID
             $userId = Auth::id();
-
-            // Retrieve other request parameters
             $busId = $request->bus_id;
             $date = $request->date;
 
-            // Fetch the bus details
             $bus = Bus::find($busId);
 
-            // Fetch booked seats for the bus and date
             $bookedSeats = SelectSeat::where('bus_id', $busId)
                 ->where('date', $date)
                 ->pluck('seat_number')
                 ->toArray();
 
-            // Pass the necessary data to the view
-            return view('booking.seat', compact('userId', 'busId', 'date', 'bookedSeats', 'bus'));
+            $client = new Client();
+
+            $ipAddress = $request->input('ip_address');
+            $apiKey = '6228418ade5911';
+
+            try {
+                $url = "https://ipinfo.io/{$ipAddress}/json?token={$apiKey}";
+
+                $response = $client->get($url);
+                $data = json_decode($response->getBody(), true);
+
+                if (isset($data['loc'])) {
+                    list($latitude, $longitude) = explode(',', $data['loc']);
+                    $latitude = (float) $latitude;
+                    $longitude = (float) $longitude;
+                    $markers = $latitude . ', ' . $longitude;
+
+                    return view('booking.seat', compact('userId', 'busId', 'date', 'bookedSeats', 'bus', 'data', 'latitude', 'longitude', 'markers'));
+                } else {
+                    // 'loc' key is not present in the response
+                    // Handle the error or redirect accordingly
+                    return redirect()->back()->with('error', 'Location information not available.');
+                }
+            } catch (\Exception $e) {
+                // Handle cURL or JSON decoding errors
+                return redirect()->back()->with('error', 'Error retrieving location information.');
+            }
         } else {
-            // User is not authenticated, redirect to the registration page
             return redirect()->route('register');
         }
     }
 
-public function select(Request $request)
-{
-    try {
-        // Retrieve the array of selected seat numbers from the request
-        $seatNumbersArray = $request->input('selectedSeats');
+    public function select(Request $request)
+    {
+        try {
+            // Retrieve the array of selected seat numbers from the request
+            $seatNumbersArray = $request->input('selectedSeats');
 
-        // Loop through each element of the array
-        foreach ($seatNumbersArray as $seatNumbersString) {
-            // Split the string into an array of seat numbers and convert each element to an integer
-            $seatNumbers = array_map('intval', explode(',', $seatNumbersString));
+            // Loop through each element of the array
+            foreach ($seatNumbersArray as $seatNumbersString) {
+                // Split the string into an array of seat numbers and convert each element to an integer
+                $seatNumbers = array_map('intval', explode(',', $seatNumbersString));
 
-            // Loop through each selected seat number and create a new SelectSeat record for it
-            foreach ($seatNumbers as $seatNumber) {
-                // Create a new instance of SelectSeat model and save data
-                SelectSeat::create([
-                    'seat_number' => $seatNumber,
-                    'user_id' => $request->user_id,
-                    'bus_id' => $request->bus_id,
-                    'date' => $request->date,
-                ]);
+                // Loop through each selected seat number and create a new SelectSeat record for it
+                foreach ($seatNumbers as $seatNumber) {
+                    // Create a new instance of SelectSeat model and save data
+                    SelectSeat::create([
+                        'seat_number' => $seatNumber,
+                        'user_id' => $request->user_id,
+                        'bus_id' => $request->bus_id,
+                        'date' => $request->date,
+                    ]);
+                }
             }
+            $userId=$request->user_id;
+            $busId=$request->bus_id;
+            $date=$request->date;
+            $bus = Bus::find($busId);
+
+            $bookedSeats = SelectSeat::where('bus_id', $busId)
+                    ->where('date', $date)
+                    ->pluck('seat_number')
+                    ->toArray();
+            // Return a response indicating success
+            $client = new Client();
+
+            $ipAddress = $request->input('ip_address');
+            $apiKey = '6228418ade5911';
+
+            try {
+                $url = "https://ipinfo.io/{$ipAddress}/json?token={$apiKey}";
+
+                $response = $client->get($url);
+                $data = json_decode($response->getBody(), true);
+
+                if (isset($data['loc'])) {
+                    list($latitude, $longitude) = explode(',', $data['loc']);
+                    $latitude = (float) $latitude;
+                    $longitude = (float) $longitude;
+                    $markers = $latitude . ', ' . $longitude;
+
+                    return view('booking.seat', compact('userId', 'busId', 'date', 'bookedSeats', 'bus', 'data', 'latitude', 'longitude', 'markers'));
+                } else {
+                    // 'loc' key is not present in the response
+                    // Handle the error or redirect accordingly
+                    return redirect()->back()->with('error', 'Location information not available.');
+                }
+            } catch (\Exception $e) {
+                // Handle cURL or JSON decoding errors
+                return redirect()->back()->with('error', 'Error retrieving location information.');
+            }
+        } catch (\Exception $e) {
+            // Return a response indicating failure if an error occurs
+            return response()->json(['message' => 'Failed to select seats', 'error' => $e->getMessage()], 500);
         }
-        $userId=$request->user_id;
-        $busId=$request->bus_id;
-        $date=$request->date;
-        $bus = Bus::find($busId);
-
-        $bookedSeats = SelectSeat::where('bus_id', $busId)
-                ->where('date', $date)
-                ->pluck('seat_number')
-                ->toArray();
-        // Return a response indicating success
-        return view('booking.seat', compact('userId', 'busId', 'date', 'bookedSeats', 'bus'));
-    } catch (\Exception $e) {
-        // Return a response indicating failure if an error occurs
-        return response()->json(['message' => 'Failed to select seats', 'error' => $e->getMessage()], 500);
-    }
-}
-
-public function editBus($id)
-{
-    $bus = Bus::find($id);
-    // dd($bus);
-    if(!$bus) {
-        abort(404);
     }
 
-    return view('admin.edit-bus', compact('bus'));
-}
-
-public function deleteBus($id)
-{
-    $bus = Bus::find($id);
-
-    if(!$bus) {
-        abort(404);
-    }
-
-    $bus->delete();
-
-    return redirect()->back()->with('success', 'Bus deleted successfully');
-}
-public function updateBus(Request $request, $id)
-{
-    $bus = Bus::find($id);
-
-    if(!$bus) {
-        abort(404);
-    }
-
-    $bus->bus_number = $request->input('busnumber');
-    $bus->root_number = $request->input('rootnumber');
-    $bus->type = $request->input('type');
-    $bus->price = $request->input('price');
-    $bus->start = $request->input('start');
-    $bus->starttime = $request->input('starttime');
-    $bus->end = $request->input('end');
-    $bus->endtime = $request->input('endtime');
-    $bus->description = $request->input('description');
-
-    if ($request->hasFile('image')) {
-        // Delete old image if exists
-        if ($bus->image) {
-            $oldImagePath = public_path('assets/images') . '/' . $bus->image;
-            if (file_exists($oldImagePath)) {
-                unlink($oldImagePath);
-            }
+    public function editBus($id)
+    {
+        $bus = Bus::find($id);
+        // dd($bus);
+        if(!$bus) {
+            abort(404);
         }
 
-        // Upload new image
-        $image = $request->file('image');
-        $image_name = time() . '.' . $image->getClientOriginalExtension();
-        $imagePath = $image->move(public_path('assets/images'), $image_name);
-        $bus->image = $image_name;
+        return view('admin.edit-bus', compact('bus'));
     }
 
-    $bus->save();
+    public function deleteBus($id)
+    {
+        $bus = Bus::find($id);
 
-    return redirect()->back()->with('success', 'Bus details updated successfully');
-}
+        if(!$bus) {
+            abort(404);
+        }
+
+        $bus->delete();
+
+        return redirect()->back()->with('success', 'Bus deleted successfully');
+    }
+    public function updateBus(Request $request, $id)
+    {
+        $bus = Bus::find($id);
+
+        if(!$bus) {
+            abort(404);
+        }
+
+        $bus->bus_number = $request->input('busnumber');
+        $bus->root_number = $request->input('rootnumber');
+        $bus->type = $request->input('type');
+        $bus->price = $request->input('price');
+        $bus->start = $request->input('start');
+        $bus->starttime = $request->input('starttime');
+        $bus->end = $request->input('end');
+        $bus->endtime = $request->input('endtime');
+        $bus->description = $request->input('description');
+
+        if ($request->hasFile('image')) {
+            // Delete old image if exists
+            if ($bus->image) {
+                $oldImagePath = public_path('assets/images') . '/' . $bus->image;
+                if (file_exists($oldImagePath)) {
+                    unlink($oldImagePath);
+                }
+            }
+
+            // Upload new image
+            $image = $request->file('image');
+            $image_name = time() . '.' . $image->getClientOriginalExtension();
+            $imagePath = $image->move(public_path('assets/images'), $image_name);
+            $bus->image = $image_name;
+        }
+
+        $bus->save();
+
+        return redirect()->back()->with('success', 'Bus details updated successfully');
+    }
 
 
 }
