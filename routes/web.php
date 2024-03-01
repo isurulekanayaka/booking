@@ -34,9 +34,9 @@ Route::get('/register', function () {
 // Route::get('/tmp', function () {
 //     return view('admin/template');
 // });
-Route::get('/add-user', function () {
-    return view('admin/add-user');
-});
+// Route::get('/add-user', function () {
+//     return view('admin/add-user');
+// });
 Route::get('/add-root', function () {
     return view('admin/add-root');
 });
@@ -71,10 +71,28 @@ Route::middleware(['auth'])->group(function () {
 
 // Bus Controller
 Route::post('/busregister', [BusController::class, 'register'])->name('busregister');
-Route::get('/tmp', [BusController::class, 'index'])->name('admin.template');
 Route::post('/bus-search', [BusController::class, 'search'])->name('bus-search');
 Route::post('/bus-seat', [BusController::class, 'seat'])->name('bus-seat');
 Route::post('/select-seat', [BusController::class, 'select'])->name('select-seat');
+
+// Admin Functions
+Route::middleware(['auth'])->group(function () {
+    Route::get('/tmp', [BusController::class, 'index'])->name('admin.template');
+    Route::post('/user-view', [BusController::class, 'userview'])->name('user-view');
+    Route::get('/user-view', [BusController::class, 'userview'])->name('user-view');
+    Route::post('/bus-view', [BusController::class, 'busview'])->name('bus-view');
+    Route::get('/bus-view', [BusController::class, 'busview'])->name('bus-view');
+    Route::post('/root-view', [BusController::class, 'rootview'])->name('root-view');
+    Route::get('/root-view', [BusController::class, 'rootview'])->name('root-view');
+    Route::post('/root-search', [BusController::class, 'searchTicket'])->name('root-search');
+    Route::post('/user-search', [BusController::class, 'searchUser'])->name('user-search');
+    Route::post('/bus-search', [BusController::class, 'searchBus'])->name('bus-search');
+    Route::get('/add-user', [BusController::class, 'addUser'])->name('add-user');
+    Route::get('/tickets/{ticket}/edit', [BusController::class, 'edit'])->name('tickets.edit');
+    Route::delete('/tickets/{ticket}', [BusController::class, 'destroy'])->name('tickets.destroy');
+
+});
+
 
 Route::get('/edit-bus/{id}', [BusController::class, 'editBus'])->name('admin.edit-bus');
 Route::delete('/delete-bus/{id}', [BusController::class, 'deleteBus'])->name('admin.delete-bus');
