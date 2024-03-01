@@ -163,36 +163,83 @@
                             <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
                         </div>
                         <div>
-                            <label class="block mb-1 text-sm font-medium" for="card-nr">Card Number <span
-                                    class="text-red-500">*</span></label>
-                            <input id="card-nr"
+                            <label class="block mb-1 text-sm font-medium" for="card-nr">Card Number <span class="text-red-500">*</span></label>
+                            <input id="card-nr" oninput="validateCreditCard()"
                                 class="w-full px-3 py-2 text-sm leading-5 text-gray-800 placeholder-gray-400 bg-white border border-gray-200 rounded shadow-sm hover:border-gray-300 focus:border-indigo-300 focus:ring-0"
-                                type="text" placeholder="1234 1234 1234 1234" />
+                                type="text" placeholder="1234 1234 1234 1234" required />
+                            <div id="card-error" class="text-red-500 mt-1"></div>
                         </div>
+
+                        <script>
+                            function validateCreditCard() {
+                                const cardNumberInput = document.getElementById('card-nr');
+                                const cardErrorDiv = document.getElementById('card-error');
+
+                                // Remove non-digit characters
+                                const cardNumber = cardNumberInput.value.replace(/\D/g, '');
+
+                                // Check if the card number is numeric and has a valid length
+                                if (!/^\d{12,19}$/.test(cardNumber)) {
+                                    cardErrorDiv.textContent = 'Invalid card number';
+                                } else {
+                                    cardErrorDiv.textContent = '';
+                                }
+                            }
+                        </script>
                         <!-- Expiry and CVC -->
                         <div class="flex space-x-4">
                             <div class="flex-1">
-                                <label class="block mb-1 text-sm font-medium" for="card-expiry">Expiry Date <span
-                                        class="text-red-500">*</span></label>
-                                <input id="card-expiry"
+                                <label class="block mb-1 text-sm font-medium" for="card-expiry">Expiry Date <span class="text-red-500">*</span></label>
+                                <input id="card-expiry" oninput="validateExpiryDate()"
                                     class="w-full px-3 py-2 text-sm leading-5 text-gray-800 placeholder-gray-400 bg-white border border-gray-200 rounded shadow-sm hover:border-gray-300 focus:border-indigo-300 focus:ring-0"
-                                    type="text" placeholder="MM/YY" />
+                                    type="text" placeholder="MM/YY" required/>
+                                <div id="expiry-error" class="text-red-500 mt-1"></div>
                             </div>
+                            <script>
+                                function validateExpiryDate() {
+                                    const expiryInput = document.getElementById('card-expiry');
+                                    const expiryErrorDiv = document.getElementById('expiry-error');
+
+                                    const expiryDate = expiryInput.value;
+
+                                    // Check if the expiry date matches MM/YY format
+                                    if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(expiryDate)) {
+                                        expiryErrorDiv.textContent = 'Invalid expiry date (MM/YY)';
+                                    } else {
+                                        expiryErrorDiv.textContent = '';
+                                    }
+                                }
+                            </script>
                             <div class="flex-1">
-                                <label class="block mb-1 text-sm font-medium" for="card-cvc">CVC <span
-                                        class="text-red-500">*</span></label>
-                                <input id="card-cvc"
+                                <label class="block mb-1 text-sm font-medium" for="card-cvc">CVC <span class="text-red-500">*</span></label>
+                                <input id="card-cvc" oninput="validateCVC()"
                                     class="w-full px-3 py-2 text-sm leading-5 text-gray-800 placeholder-gray-400 bg-white border border-gray-200 rounded shadow-sm hover:border-gray-300 focus:border-indigo-300 focus:ring-0"
-                                    type="text" placeholder="CVC" />
+                                    type="text" placeholder="CVC" required/>
+                                <div id="cvc-error" class="text-red-500 mt-1"></div>
                             </div>
+                            <script>
+                                function validateCVC() {
+                                    const cvcInput = document.getElementById('card-cvc');
+                                    const cvcErrorDiv = document.getElementById('cvc-error');
+
+                                    const cvc = cvcInput.value;
+
+                                    // Check if the CVC is a three or four-digit number
+                                    if (!/^\d{3,4}$/.test(cvc)) {
+                                        cvcErrorDiv.textContent = 'Invalid CVC (should be 3 or 4 digits)';
+                                    } else {
+                                        cvcErrorDiv.textContent = '';
+                                    }
+                                }
+                            </script>
                         </div>
                         <!-- Name on Card -->
                         <div>
                             <label class="block mb-1 text-sm font-medium" for="card-name">Name on Card <span
                                     class="text-red-500">*</span></label>
-                            <input id="card-name"
+                            <input id="card-name" name="card-name"
                                 class="w-full px-3 py-2 text-sm leading-5 text-gray-800 placeholder-gray-400 bg-white border border-gray-200 rounded shadow-sm hover:border-gray-300 focus:border-indigo-300 focus:ring-0"
-                                type="text" placeholder="John Doe" />
+                                type="text" placeholder="John Doe" required/>
                         </div>
                         <!-- Email -->
                         <div>
@@ -200,7 +247,7 @@
                                     class="text-red-500">*</span></label>
                             <input id="card-email"
                                 class="w-full px-3 py-2 text-sm leading-5 text-gray-800 placeholder-gray-400 bg-white border border-gray-200 rounded shadow-sm hover:border-gray-300 focus:border-indigo-300 focus:ring-0"
-                                type="email" placeholder="john@company.com" />
+                                type="email" placeholder="john@company.com" required/>
                         </div>
 
                         <!-- Form footer -->

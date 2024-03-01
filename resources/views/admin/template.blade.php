@@ -29,26 +29,55 @@
                 </a>
             </li>
             <li class="mb-1 group">
-                <a href="#" onclick="displayUser()"
+                <a href="#" onclick="submitUserViewForm()"
                     class="flex items-center py-2 px-4 text-gray-300 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100 sidebar-dropdown-toggle">
-                    <i class="mr-3 text-lg ri-user-line"></i>
+                    <i class="mr-3 text-lg ri-bus-line"></i>
                     <span class="text-sm">User</span>
                 </a>
             </li>
+
+            <script>
+                function submitUserViewForm() {
+                    document.getElementById('userViewForm').submit();
+                }
+            </script>
+
+            <form id="userViewForm" method="GET" action="{{ route('user-view') }}">
+                @csrf <!-- Include this line for CSRF protection, if needed -->
+            </form>
             <li class="mb-1 group">
-                <a href="#" onclick="displayRoot()"
+                <a href="#" onclick="submitRootViewForm()"
                     class="flex items-center py-2 px-4 text-gray-300 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100 sidebar-dropdown-toggle">
                     <i class="mr-3 text-lg ri-instance-line"></i>
-                    <span class="text-sm">Roots</span>
+                    <span class="text-sm">Ticket</span>
                 </a>
             </li>
+
+            <script>
+                function submitRootViewForm() {
+                    document.getElementById('rootViewForm').submit();
+                }
+            </script>
+
+            <form id="rootViewForm" method="GET" action="{{ route('root-view') }}">
+                @csrf <!-- Include this line for CSRF protection, if needed -->
+            </form>
             <li class="mb-1 group">
-                <a href="#" onclick="displayBus()"
+                <a href="#" onclick="submitBusViewForm()"
                     class="flex items-center py-2 px-4 text-gray-300 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100 sidebar-dropdown-toggle">
                     <i class="mr-3 text-lg ri-bus-line"></i>
                     <span class="text-sm">Bus</span>
                 </a>
             </li>
+            <script>
+                function submitBusViewForm() {
+                    document.getElementById('busViewForm').submit();
+                }
+            </script>
+
+            <form id="busViewForm" method="GET" action="{{ route('bus-view') }}">
+                @csrf <!-- Include this line for CSRF protection, if needed -->
+            </form>
             <li class="mb-1 group">
                 <a href="#"
                     class="flex items-center py-2 px-4 text-gray-300 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100 sidebar-dropdown-toggle">
@@ -58,10 +87,14 @@
                 </a>
                 <ul class="pl-7 mt-2 hidden group-[.selected]:block">
                     <li class="mb-4">
-                        <a href="#"
-                            class="text-gray-300 text-sm flex items-center hover:text-gray-100 before:contents-[''] before:w-1 before:h-1 before:rounded-full before:bg-gray-300 before:mr-3">
-                            Logout</a>
+                        <form action="{{ route('logout') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="text-gray-300 text-sm flex items-center hover:text-gray-100 before:contents-[''] before:w-1 before:h-1 before:rounded-full before:bg-gray-300 before:mr-3">
+                                Logout
+                            </button>
+                        </form>
                     </li>
+
                 </ul>
             </li>
         </ul>
@@ -166,7 +199,7 @@
             </div>
         </div>
         <div id="user" class="hidden m-7">
-            <div class="flex justify-between mb-4">
+            {{-- <div class="flex justify-between mb-4">
                 <div class="w-1/2">
                     <a href="" class="text-3xl" onclick="displayDashboard()">Dashboard</a><samp class="text-3xl"> /
                         User</samp>
@@ -178,7 +211,7 @@
                         </button>
                     </a>
                 </div>
-            </div>
+            </div> --}}
             <!-- component -->
             {{-- <div class="flex items-center ">
                 <div class="rounded-lg">
@@ -200,7 +233,7 @@
                 </div>
             </div> --}}
             <!-- component -->
-            <div class="antialiased">
+            {{-- <div class="antialiased">
                 <div class="container px-4 mx-auto sm:px-8">
                     <div class="py-8">
                         <div>
@@ -357,18 +390,18 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> --}}
         </div>
         <div id="root" class="hidden m-7">
-            <div class="flex justify-between mb-4">
+            {{-- <div class="flex justify-between mb-4">
                 <div class="w-1/2">
                     <a href="" class="text-3xl" onclick="displayDashboard()">Dashboard</a><samp class="text-3xl"> /
-                        Roots</samp>
+                        Ticket</samp>
                 </div>
                 <div class="flex justify-end w-1/2">
                     <a href="{{ url('/add-root') }}">
                         <button class="p-2 bg-blue-500 rounded-lg hover:bg-blue-600">
-                            Roots +
+                            Tickets +
                         </button>
                     </a>
                 </div>
@@ -377,7 +410,7 @@
                 <div class="container px-4 mx-auto sm:px-8">
                     <div class="py-8">
                         <div>
-                            <h2 class="text-2xl font-semibold leading-tight">Users</h2>
+                            <h2 class="text-2xl font-semibold leading-tight">Ticket</h2>
                         </div>
                         <div class="flex flex-col my-2 sm:flex-row">
                             <div class="flex flex-row mb-1 sm:mb-0">
@@ -398,10 +431,11 @@
                                     </div>
                                 </div>
                                 <div class="relative">
-                                    <select
-                                        class="block w-full h-full px-4 py-2 pr-8 leading-tight text-gray-700 bg-white border-t border-b border-r border-gray-400 rounded-r appearance-none sm:rounded-r-none sm:border-r-0 focus:outline-none focus:border-l focus:border-r focus:bg-white focus:border-gray-500">
-                                        <option selected disabled>-- From --</option>
-                                        <option>Active</option>
+                                    <select class="block w-full h-full px-4 py-2 pr-8 leading-tight text-gray-700 bg-white border-t border-b border-r border-gray-400 rounded-r appearance-none sm:rounded-r-none sm:border-r-0 focus:outline-none focus:border-l focus:border-r focus:bg-white focus:border-gray-500">
+                                        <option selected disabled>-- Bus --</option>
+                                        @foreach($buses as $bus)
+                                            <option value="{{$bus->id}}">{{$bus->id}}</option>
+                                        @endforeach
                                     </select>
                                     <div
                                         class="absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 pointer-events-none">
@@ -413,19 +447,7 @@
                                     </div>
                                 </div>
                                 <div class="relative">
-                                    <select
-                                        class="block w-full h-full px-4 py-2 pr-8 leading-tight text-gray-700 bg-white border border-t border-b border-gray-400 rounded-r appearance-none sm:rounded-r-none focus:outline-none focus:border-l focus:border-r focus:bg-white focus:border-gray-500">
-                                        <option selected disabled>-- To --</option>
-                                        <option>Active</option>
-                                    </select>
-                                    <div
-                                        class="absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 pointer-events-none">
-                                        <svg class="w-4 h-4 fill-current" xmlns="http://www.w3.org/2000/svg"
-                                            viewBox="0 0 20 20">
-                                            <path
-                                                d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-                                        </svg>
-                                    </div>
+                                    <input type="date" id="datepicker" name="datepicker" class="block w-full h-full px-4 py-2 pr-8 leading-tight text-gray-700 bg-white border border-t border-b border-gray-400 rounded-r appearance-none sm:rounded-r-none focus:outline-none focus:border-l focus:border-r focus:bg-white focus:border-gray-500">
                                 </div>
                             </div>
                             <div class="relative block">
@@ -442,19 +464,19 @@
                                         <tr>
                                             <th
                                                 class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200">
-                                                From
+                                                User Id
                                             </th>
                                             <th
                                                 class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200">
-                                                To
+                                                Bus Id
                                             </th>
                                             <th
                                                 class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200">
-                                                Root Number
+                                                Seat Number
                                             </th>
                                             <th
                                                 class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200">
-                                                Description
+                                                Date
                                             </th>
                                             <th
                                                 class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200">
@@ -463,22 +485,23 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        @foreach ($ticket->take(5) as $ticket)
                                         <tr>
                                             <td class="px-2 py-5 text-sm bg-white border-b border-gray-200">
                                                 <div class="flex ">
                                                     <div class="ml-3">
                                                         <p class="text-gray-900 whitespace-no-wrap">
-                                                            Vera Carpenter
+                                                            {{$ticket->user_id}}
                                                         </p>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td class="px-5 py-5 text-sm bg-white border-b border-gray-200">
-                                                <p class="text-gray-900 whitespace-no-wrap">Admin</p>
+                                                <p class="text-gray-900 whitespace-no-wrap">{{$ticket->bus_id}}</p>
                                             </td>
                                             <td class="px-5 py-5 text-sm bg-white border-b border-gray-200">
                                                 <p class="text-gray-900 whitespace-no-wrap">
-                                                    Jan 21, 2020
+                                                    {{$ticket->seat_number}}
                                                 </p>
                                             </td>
                                             <td class="px-5 py-5 text-sm bg-white border-b border-gray-200">
@@ -486,7 +509,7 @@
                                                     class="relative inline-block px-3 py-1 font-semibold leading-tight text-green-900">
                                                     <span aria-hidden
                                                         class="absolute inset-0 bg-green-200 rounded-full opacity-50"></span>
-                                                    <span class="relative">Activo</span>
+                                                    <span class="relative">{{$ticket->date}}</span>
                                                 </span>
                                             </td>
                                             <td class="px-5 py-5 text-sm bg-white border-b border-gray-200">
@@ -501,13 +524,12 @@
                                                 </div>
                                             </td>
                                         </tr>
+                                        @endforeach
                                     </tbody>
                                 </table>
                                 <div
                                     class="flex flex-col items-center px-5 py-5 bg-white border-t xs:flex-row xs:justify-between ">
-                                    <span class="text-xs text-gray-900 xs:text-sm">
-                                        Showing 1 to 4 of 50 Entries
-                                    </span>
+
                                     <div class="inline-flex mt-2 xs:mt-0">
                                         <button
                                             class="px-4 py-2 text-sm font-semibold text-gray-800 bg-gray-300 rounded-l hover:bg-gray-400">
@@ -523,10 +545,10 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> --}}
         </div>
         <div id="bus" class="hidden m-7">
-            <div class="flex justify-between mb-4">
+            {{-- <div class="flex justify-between mb-4">
                 <div class="w-1/2">
                     <a href="" class="text-3xl" onclick="displayDashboard()">Dashboard</a><samp class="text-3xl"> /
                         Bus</samp>
@@ -709,7 +731,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> --}}
         </div>
 
     </main>
