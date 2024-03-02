@@ -6,6 +6,12 @@ use App\Models\Bus;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail; // Add this import
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
+use App\Mail\ContactFormMail;
+
 
 class UserController extends Controller
 {
@@ -148,5 +154,71 @@ public function deleteUser(Request $request, $id){
 
     return redirect()->back()->with('success', 'User deleted successfully');
 }
+
+public function forgetpassword_index(){
+    return view('auth.forgetpassword');
+}
+
+public function forgetpasswordPost(Request $request){
+    $request->validate([
+        'email' => 'required|email|exists:users'
+    ]);
+
+    $token = Str::random(64);
+
+    // Insert the password reset data into the 'password_reset' table
+    DB::table('password_reset')->insert([
+        'email' => $request->email,
+        'token' => $token,
+        'created_at' => now() // Using the helper function now() instead of Carbon::now()
+    ]);
+
+    try {
+        // Send an email with the password reset link
+        Mail::send('auth.emails.forget_password', ['token' => $token], function ($message) use ($request) {
+            $message->to($request->email);
+            $message->subject('Reset Password');
+        });
+
+        // Redirect with success message if the email is sent successfully
+        return redirect()->to(route("forgetpassword"))->with("success", "We have sent an email to reset your password.");
+
+    } catch (\Exception $e) {
+        // Redirect with error message if there is an issue with sending the email
+        return redirect()->to(route("forgetpassword"))->with("error", "Sorry, we couldn't send the password reset email. Please try again.");
+    }
+}
+
+public function resetpassword_index($token){
+    return view('auth.resetpassword',compact('token'));
+}
+
+public function resetpasswordPost(Request $request){
+    $request->validate([
+        "new_password" => "required|string|min:8|confirmed",
+        "new_password_confirmation" => "required"
+    ]);
+
+    $updatePassword = DB::table('password_reset')->where([
+        "token" => $request->token
+    ])->first();
+
+    if (!$updatePassword) {
+        return redirect()->route("resetpassword")->with("error", "invalid");
+    }
+
+    // Retrieve the user email from the password_resets table
+    $userEmail = $updatePassword->email;
+
+    // Update user password in the users table
+    User::where("email", $userEmail)->update(["password" => Hash::make($request->new_password)]);
+
+    // Delete the entry from the password_resets table
+    DB::table("password_reset")->where(["email" => $userEmail])->delete();
+
+    return redirect()->route("forgetpassword")->with("success", "Password reset successful. An email has been sent.");
+}
+
+
 
 }
