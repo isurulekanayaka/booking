@@ -72,7 +72,7 @@ Route::middleware(['auth'])->group(function () {
 // Bus Controller
 Route::post('/busregister', [BusController::class, 'register'])->name('busregister');
 Route::post('/bus-search', [BusController::class, 'search'])->name('bus-search');
-Route::post('/bus-seat', [BusController::class, 'seat'])->name('bus-seat');
+Route::match(['get', 'post'], '/bus-seat', [BusController::class, 'seat'])->name('bus-seat');
 Route::post('/select-seat', [BusController::class, 'select'])->name('select-seat');
 
 // Admin Functions
@@ -104,3 +104,14 @@ Route::get('/select-seats', [BusController::class, 'showSeats'])->name('show-sea
 
 // Route to handle seat selection submission
 Route::post('/select-seats', [BusController::class, 'selectSeats'])->name('select-seats');
+Route::post('/select-seats', [BusController::class, 'submitForm'])->name('select-seats.submit');
+
+
+
+
+Route::get('/forgetpassword', [UserController::class, 'forgetpassword_index'])->name('forgetpassword');
+Route::post('/forgetpassword', [UserController::class, 'forgetpasswordPost'])->name('forgetpasswordPost');
+
+
+Route::get('/resetpassword/{token}', [UserController::class, 'resetpassword_index'])->name('resetpassword');
+Route::post('/resetpassword',[UserController::class,'resetpasswordPost'])->name('resetpasswordPost');

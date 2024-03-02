@@ -8,6 +8,9 @@ use App\Models\SelectSeat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ContactFormMail;
+
 use GuzzleHttp\Exception\RequestException;
 
 class BusController extends Controller
@@ -288,7 +291,9 @@ class BusController extends Controller
 
     public function select(Request $request)
     {
-        dd($request);
+        // dd($request);
+
+
         try {
             // Retrieve the array of selected seat numbers from the request
             $seatNumbersArray = $request->input('selectedSeats');
@@ -306,12 +311,20 @@ class BusController extends Controller
                         'user_id' => $request->user_id,
                         'bus_id' => $request->bus_id,
                         'date' => $request->date,
+                        'pay-button'
                     ]);
                 }
+
+
+
+
+
             }
+
             $userId=$request->user_id;
             $busId=$request->bus_id;
             $date=$request->date;
+
             $bus = Bus::find($busId);
 
             $bookedSeats = SelectSeat::where('bus_id', $busId)
@@ -320,6 +333,19 @@ class BusController extends Controller
                     ->toArray();
             // Return a response indicating success
             $client = new Client();
+            $details = [
+                'user_id' => $userId,
+                'bus_id' => $busId,
+                'date' => $date,
+                'seat_number'=>$seatNumber,
+
+
+                // Add other details as needed
+            ];
+
+            Mail::to('uminduchethiya@gmail.com')->send(new ContactFormMail($details));
+            // Send booking confirmation email to your email address
+
 
             $ipAddress = $request->input('ip_address');
             $apiKey = '6228418ade5911';
@@ -421,7 +447,7 @@ class BusController extends Controller
     }
     public function edit(Request $request,$id)
     {
-        dd($id);
+        // dd($id);
     }
 
     public function destroy(Request $request, $id)
@@ -436,4 +462,29 @@ class BusController extends Controller
 
             return redirect()->back()->with('success', 'Bus deleted successfully');
     }
+
+    // public function submitForm(Request $request)
+    // {
+    //     // Validate the form data
+    //     $request->validate([
+    //         'bus_id' => 'required|string|max:255',
+    //         'date' => 'required|email|max:255',
+    //     ]);
+
+    //     // Send email
+    //     $details = [
+    //         'bus_id' => $request->bus_id,
+    //         'date' => $request->date,
+    //     ];
+
+    //     // Pass the $details array to the ContactFormMail constructor
+    //     $mail = new ContactFormMail($details);
+
+    //     // Send the email using the Mail facade
+    //     \Mail::to('uminduchethiya@gmail.com')->send($mail);
+
+    //     // Redirect back with success message or do any other actions
+    //     return back()->with('success', 'Message sent successfully!');
+    // }
+
 }

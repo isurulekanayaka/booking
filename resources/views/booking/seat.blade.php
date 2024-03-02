@@ -32,8 +32,8 @@
     </div>
     <div class="flex mx-12 my-20">
         <div class="w-1/4 ml-4 border">
-            {{-- <form id="seat-selection-form" action="{{ route('select-seat') }}" method="post"> --}}
-                <form id="seat-selection-form" action="" method="post">
+            <form id="seat-selection-form" action="{{ route('select-seat') }}" method="post">
+                <form id="seat-selection-form"  action="#" method="post">
                     @csrf
 
                     {{-- <input type="hidden" name="selected_seats" id="selected-seats"> --}}
@@ -157,9 +157,10 @@
                         </div>
                         <div>
 
+
                             <input type="hidden" name="selectedSeats[]" id="selected-seats">
-                            <input type="hidden" name="bus_id" value="{{ $busId }}">
-                            <input type="hidden" name="date" value="{{ $date }}">
+                            <input type="hidden" name="bus_id" id="bus_id" value="{{ $busId }}">
+                            <input type="hidden" name="date"  id="date" value="{{ $date }}">
                             <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
                         </div>
                         <div>
@@ -253,7 +254,7 @@
                         <!-- Form footer -->
                         <div class="mt-6">
                             <div class="mb-4">
-                                <button id="pay-button"
+                                <button id="pay-button" type="submit"
                                     class="inline-flex items-center justify-center w-full px-3 py-2 text-sm font-medium leading-5 text-white transition duration-150 ease-in-out bg-indigo-500 border border-transparent rounded shadow-sm hover:bg-indigo-600 focus:outline-none focus-visible:ring-2">Pay
                                     $0.00</button>
                             </div>
