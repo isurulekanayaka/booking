@@ -56,26 +56,25 @@
                         <img src="{{ asset('img/icon/avatar.png') }}" alt=""
                             class="block object-cover w-8 h-8 align-middle rounded">
                     </button>
-                    <ul class="dropdown-menu shadow-md shadow-black/5 z-30 hidden py-1.5 rounded-md bg-white border border-gray-100 w-full max-w-[140px] absolute right-0 mt-5"
-                        id="dropdownMenu">
-                        <form id="loginForm" action="{{ route('login') }}" method="get" style="display: none;">
-                            @csrf
-                            <!-- Any additional form fields for login can be added here -->
-                        </form>
+                    <ul class="dropdown-menu shadow-md shadow-black/5 z-30 hidden py-1.5 rounded-md bg-white border border-gray-100 w-full max-w-[140px] absolute right-0 mt-5" id="dropdownMenu">
+    @guest
+        <!-- Display login link for guests (not logged in users) -->
+        <li>
+            <a href="{{ route('login') }}" class="flex items-center text-[13px] py-1.5 px-4 text-gray-600 hover:text-blue-500 hover:bg-gray-50">Login</a>
+        </li>
+    @else
+        <!-- Display logout link for authenticated users (logged in users) -->
+        <form action="{{ route('logout') }}" method="post">
+            @csrf
+            <li>
+                <button type="submit" class="flex items-center text-[13px] py-1.5 px-4 text-gray-600 hover:text-blue-500 hover:bg-gray-50">
+                    Logout
+                </button>
+            </li>
+        </form>
+    @endguest
+</ul>
 
-                        <li>
-                            <a href="#" onclick="document.getElementById('loginForm').submit(); return false;"
-                                class="flex items-center text-[13px] py-1.5 px-4 text-gray-600 hover:text-blue-500 hover:bg-gray-50">Login</a>
-                        </li>
-                        <form action="{{ route('logout') }}" method="post">
-                            @csrf
-                            <button type="submit"
-                                class="flex items-center text-[13px] py-1.5 px-4 text-gray-600 hover:text-blue-500 hover:bg-gray-50">
-                                Logout
-                            </button>
-                        </form>
-
-                    </ul>
                 </li>
             </ul>
         </div>

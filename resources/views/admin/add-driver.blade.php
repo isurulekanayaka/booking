@@ -77,7 +77,7 @@
                                         class="z-10 flex items-center justify-center w-10 pl-1 text-center pointer-events-none">
                                         <i class="text-lg text-gray-400 mdi mdi-account-outline"></i>
                                     </div>
-                                    <select id="roll" name="user_role"
+                                    <select id="roll" name="user_role" required
                                         class="w-full py-2 pl-10 pr-3 -ml-10 border-2 border-gray-200 rounded-lg outline-none focus:border-indigo-500">
                                         <option value="driver" class="text-gray-400 ">Driver</option>
                                     </select>
@@ -91,7 +91,7 @@
                                         class="z-10 flex items-center justify-center w-10 pl-1 text-center pointer-events-none">
                                         <i class="text-lg text-gray-400 mdi mdi-account-outline"></i>
                                     </div>
-                                    <select id="user_status" name="user_status"
+                                    <select id="user_status" name="user_status" required
                                         class="w-full py-2 pl-10 pr-3 -ml-10 border-2 border-gray-200 rounded-lg outline-none focus:border-indigo-500">
                                         <option value="Active" class="text-gray-400 ">Active</option>
                                         <option value="Inactive" class="text-gray-400 ">Inactive</option>
@@ -108,7 +108,7 @@
                                         class="z-10 flex items-center justify-center w-10 pl-1 text-center pointer-events-none">
                                         <i class="text-lg text-gray-400 mdi mdi-account-outline"></i>
                                     </div>
-                                    <select id="busId" name="busId"
+                                    <select id="busId" name="busId" required
                                         class="w-full py-2 pl-10 pr-3 -ml-10 border-2 border-gray-200 rounded-lg outline-none focus:border-indigo-500">
                                         <option value="" class="text-gray-400 " selected disabled>Bus Id</option>
                                         @foreach ($buses as $buses)
@@ -126,7 +126,7 @@
                                         class="z-10 flex items-center justify-center w-10 pl-1 text-center pointer-events-none">
                                         <i class="text-lg text-gray-400 mdi mdi-email-outline"></i>
                                     </div>
-                                    <input type="email" id="email" name="email"
+                                    <input type="email" id="email" name="email" 
                                         class="w-full py-2 pl-10 pr-3 -ml-10 border-2 border-gray-200 rounded-lg outline-none focus:border-indigo-500"
                                         placeholder="johnsmith@example.com" required>
                                 </div>
