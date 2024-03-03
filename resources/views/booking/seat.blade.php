@@ -33,7 +33,7 @@
     <div class="flex mx-12 my-20">
         <div class="w-1/4 ml-4 border">
             <form id="seat-selection-form" action="{{ route('select-seat') }}" method="post">
-                <form id="seat-selection-form"  action="#" method="post">
+                <form id="seat-selection-form" action="#" method="post">
                     @csrf
 
                     {{-- <input type="hidden" name="selected_seats" id="selected-seats"> --}}
@@ -52,7 +52,7 @@
                                         <div class="flex flex-col items-center">
                                             <input id="checkbox{{$i}}" type="checkbox" value="{{$i}}" name="checkbox"
                                                 {{$isBooked ? 'disabled' : '' }}
-                                                class="seat-checkbox w-6 h-6 text-red-600 bg-gray-100 border-gray-300 focus:ring-red-500 dark:focus:ring-red-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                                class="w-6 h-6 text-red-600 bg-gray-100 border-gray-300 seat-checkbox focus:ring-red-500 dark:focus:ring-red-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                                             <label for="checkbox{{$i}}"
                                                 class="text-sm font-medium text-gray-900 dark:text-gray-300">{{$i}}</label>
                                         </div>
@@ -74,7 +74,7 @@
                                 selectedSeats = selectedSeats.filter(seat => seat !== seatNumber);
                             }
                             updateSelectedSeatsInput(); // Update hidden input field
-                            updateTotalPrice(); // Update total price
+                            updateTotalPrice(); // Update total price and pay-button value
                         });
                     });
 
@@ -82,15 +82,17 @@
                         document.getElementById('selected-seats').value = selectedSeats;
                     }
 
-
                     function updateTotalPrice() {
                         const totalPrice = selectedSeats.length * {{$bus->price}};
-                        document.getElementById('pay-button').textContent = 'Pay $' + totalPrice.toFixed(2);
+                        const payButton = document.getElementById('pay-button');
+                        payButton.textContent = 'Pay $' + totalPrice.toFixed(2);
+                        payButton.value = totalPrice; // Set the value attribute of the pay-button
                     }
 
                     // Call updateTotalPrice once when the page loads
                     window.addEventListener('load', updateTotalPrice);
                 </script>
+
 
 
 
@@ -151,8 +153,10 @@
                         <!-- Card Number -->
                         <div class="px-2 mb-5">
                             <label for="type1" class="flex items-center cursor-pointer">
-                                <input type="radio" class="form-radio h-5 w-5 text-indigo-500" name="type" id="type1" checked>
-                                <img src="https://leadershipmemphis.org/wp-content/uploads/2020/08/780370.png" class="h-8 ml-3">
+                                <input type="radio" class="w-5 h-5 text-indigo-500 form-radio" name="type" id="type1"
+                                    checked>
+                                <img src="https://leadershipmemphis.org/wp-content/uploads/2020/08/780370.png"
+                                    class="h-8 ml-3">
                             </label>
                         </div>
                         <div>
@@ -160,15 +164,16 @@
 
                             <input type="hidden" name="selectedSeats[]" id="selected-seats">
                             <input type="hidden" name="bus_id" id="bus_id" value="{{ $busId }}">
-                            <input type="hidden" name="date"  id="date" value="{{ $date }}">
+                            <input type="hidden" name="date" id="date" value="{{ $date }}">
                             <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
                         </div>
                         <div>
-                            <label class="block mb-1 text-sm font-medium" for="card-nr">Card Number <span class="text-red-500">*</span></label>
+                            <label class="block mb-1 text-sm font-medium" for="card-nr">Card Number <span
+                                    class="text-red-500">*</span></label>
                             <input id="card-nr" oninput="validateCreditCard()"
                                 class="w-full px-3 py-2 text-sm leading-5 text-gray-800 placeholder-gray-400 bg-white border border-gray-200 rounded shadow-sm hover:border-gray-300 focus:border-indigo-300 focus:ring-0"
                                 type="text" placeholder="1234 1234 1234 1234" required />
-                            <div id="card-error" class="text-red-500 mt-1"></div>
+                            <div id="card-error" class="mt-1 text-red-500"></div>
                         </div>
 
                         <script>
@@ -190,11 +195,12 @@
                         <!-- Expiry and CVC -->
                         <div class="flex space-x-4">
                             <div class="flex-1">
-                                <label class="block mb-1 text-sm font-medium" for="card-expiry">Expiry Date <span class="text-red-500">*</span></label>
+                                <label class="block mb-1 text-sm font-medium" for="card-expiry">Expiry Date <span
+                                        class="text-red-500">*</span></label>
                                 <input id="card-expiry" oninput="validateExpiryDate()"
                                     class="w-full px-3 py-2 text-sm leading-5 text-gray-800 placeholder-gray-400 bg-white border border-gray-200 rounded shadow-sm hover:border-gray-300 focus:border-indigo-300 focus:ring-0"
-                                    type="text" placeholder="MM/YY" required/>
-                                <div id="expiry-error" class="text-red-500 mt-1"></div>
+                                    type="text" placeholder="MM/YY" required />
+                                <div id="expiry-error" class="mt-1 text-red-500"></div>
                             </div>
                             <script>
                                 function validateExpiryDate() {
@@ -212,11 +218,12 @@
                                 }
                             </script>
                             <div class="flex-1">
-                                <label class="block mb-1 text-sm font-medium" for="card-cvc">CVC <span class="text-red-500">*</span></label>
+                                <label class="block mb-1 text-sm font-medium" for="card-cvc">CVC <span
+                                        class="text-red-500">*</span></label>
                                 <input id="card-cvc" oninput="validateCVC()"
                                     class="w-full px-3 py-2 text-sm leading-5 text-gray-800 placeholder-gray-400 bg-white border border-gray-200 rounded shadow-sm hover:border-gray-300 focus:border-indigo-300 focus:ring-0"
-                                    type="text" placeholder="CVC" required/>
-                                <div id="cvc-error" class="text-red-500 mt-1"></div>
+                                    type="text" placeholder="CVC" required />
+                                <div id="cvc-error" class="mt-1 text-red-500"></div>
                             </div>
                             <script>
                                 function validateCVC() {
@@ -240,7 +247,7 @@
                                     class="text-red-500">*</span></label>
                             <input id="card-name" name="card-name"
                                 class="w-full px-3 py-2 text-sm leading-5 text-gray-800 placeholder-gray-400 bg-white border border-gray-200 rounded shadow-sm hover:border-gray-300 focus:border-indigo-300 focus:ring-0"
-                                type="text" placeholder="John Doe" required/>
+                                type="text" placeholder="John Doe" required />
                         </div>
                         <!-- Email -->
                         <div>
@@ -248,13 +255,13 @@
                                     class="text-red-500">*</span></label>
                             <input id="card-email"
                                 class="w-full px-3 py-2 text-sm leading-5 text-gray-800 placeholder-gray-400 bg-white border border-gray-200 rounded shadow-sm hover:border-gray-300 focus:border-indigo-300 focus:ring-0"
-                                type="email" placeholder="john@company.com" required/>
+                                type="email" placeholder="john@company.com" required />
                         </div>
-
+{{-- <input type="text" hidden> --}}
                         <!-- Form footer -->
                         <div class="mt-6">
                             <div class="mb-4">
-                                <button id="pay-button" type="submit"
+                                <button id="pay-button" type="submit" name="price"
                                     class="inline-flex items-center justify-center w-full px-3 py-2 text-sm font-medium leading-5 text-white transition duration-150 ease-in-out bg-indigo-500 border border-transparent rounded shadow-sm hover:bg-indigo-600 focus:outline-none focus-visible:ring-2">Pay
                                     $0.00</button>
                             </div>
@@ -264,7 +271,10 @@
             </div>
         </div>
     </div>
+    @if ($status == 'send')
     <div id="map" class="w-full h-96"></div>
+@endif
+
     <script>
         function initMap() {
             // Define the center of the map
@@ -287,10 +297,10 @@
         // Initialize the map when the page loads
         google.maps.event.addDomListener(window, 'load', initMap);
     </script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAz-IbTNgHhfweThsHnp9Tt452ymYd8e18"></script>
-<div id="map" class="w-full h-auto mb-10"></div>
-<script>
-    function initMap() {
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAz-IbTNgHhfweThsHnp9Tt452ymYd8e18"></script>
+    <div id="map" class="w-full h-auto mb-10"></div>
+    <script>
+        function initMap() {
         var center = { lat: {{ $latitude }}, lng: {{ $longitude }} }; // Use the compacted values
         var map = new google.maps.Map(document.getElementById('map'), {
             center: center,
@@ -303,7 +313,7 @@
         });
     }
     google.maps.event.addDomListener(window, 'load', initMap);
-</script>
+    </script>
     @include('components.footer')
     <style>
         .darkened-image {

@@ -67,6 +67,9 @@ Route::middleware(['auth'])->group(function () {
     // Route for the user's profile
     Route::get('/profile', [UserController::class, 'profile'])->name('user.profile');
     Route::post('/profile/update', [UserController::class, 'updateProfile'])->name('user.profile.update');
+
+Route::post('/contacts', [UserController::class, 'send'])->name('contact.send');
+Route::get('/contacts', [UserController::class, 'send'])->name('contact.send');
 });
 
 // Bus Controller
@@ -76,7 +79,7 @@ Route::match(['get', 'post'], '/bus-seat', [BusController::class, 'seat'])->name
 Route::post('/select-seat', [BusController::class, 'select'])->name('select-seat');
 
 // Admin Functions
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'checkUserRole:admin'])->group(function () {
     Route::get('/tmp', [BusController::class, 'index'])->name('admin.template');
     Route::post('/user-view', [BusController::class, 'userview'])->name('user-view');
     Route::get('/user-view', [BusController::class, 'userview'])->name('user-view');
@@ -86,11 +89,18 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/root-view', [BusController::class, 'rootview'])->name('root-view');
     Route::post('/root-search', [BusController::class, 'searchTicket'])->name('root-search');
     Route::post('/user-search', [BusController::class, 'searchUser'])->name('user-search');
-    Route::post('/bus-search', [BusController::class, 'searchBus'])->name('bus-search');
     Route::get('/add-user', [BusController::class, 'addUser'])->name('add-user');
+    Route::get('/add-driver', [BusController::class, 'addDriver'])->name('add-driver');
     Route::get('/tickets/{ticket}/edit', [BusController::class, 'edit'])->name('tickets.edit');
     Route::delete('/tickets/{ticket}', [BusController::class, 'destroy'])->name('tickets.destroy');
+    Route::post('/bus-searchs', [BusController::class, 'searchBus'])->name('bus-searchs');
+});
 
+
+// drver
+Route::middleware(['auth', 'checkDriverRole'])->group(function () {
+    Route::get('/send/{busId}', [BusController::class, 'send'])->name('send');
+    Route::get('/stop/{busId}', [BusController::class, 'stop'])->name('stop');
 });
 
 

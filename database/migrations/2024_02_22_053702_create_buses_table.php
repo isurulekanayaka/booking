@@ -22,7 +22,8 @@ return new class extends Migration
             $table->time('endtime');
             $table->text('description');
             $table->string('image');
-            $table->decimal('price', 10, 2); 
+            $table->decimal('price', 10, 2);
+            $table->string('status')->default('stop');
             $table->timestamps();
         });
     }

@@ -18,8 +18,9 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('phone')->nullable();
             $table->string('password');
-            $table->enum('user_role', ['admin', 'user']);
+            $table->enum('user_role', ['admin', 'user','driver']);
             $table->string('user_status');
+            $table->string('busId')->unique()->nullable()->default(null);
             $table->rememberToken();
             $table->timestamp('email_verified_at')->nullable();
             $table->timestamps();
