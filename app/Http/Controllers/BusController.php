@@ -245,12 +245,14 @@ class BusController extends Controller
 
     public function seat(Request $request)
     {
+        // dd($request);
         if (Auth::check()) {
             $userId = Auth::id();
             $busId = $request->bus_id;
             $date = $request->date;
 
             $bus = Bus::find($busId);
+            $status = $bus->status;
 
             $bookedSeats = SelectSeat::where('bus_id', $busId)
                 ->where('date', $date)
@@ -274,7 +276,7 @@ class BusController extends Controller
                     $longitude = (float) $longitude;
                     $markers = $latitude . ', ' . $longitude;
 
-                    return view('booking.seat', compact('userId', 'busId', 'date', 'bookedSeats', 'bus', 'data', 'latitude', 'longitude', 'markers'));
+                    return view('booking.seat', compact('userId', 'busId', 'date', 'bookedSeats', 'bus', 'data', 'latitude', 'longitude', 'markers','status'));
                 } else {
                     // 'loc' key is not present in the response
                     // Handle the error or redirect accordingly
@@ -313,37 +315,39 @@ class BusController extends Controller
                         'date' => $request->date,
                         'pay-button'
                     ]);
+
+        $allSeatNumbers[] = $seatNumber;
                 }
-
-
-
 
 
             }
 
-            $userId=$request->user_id;
-            $busId=$request->bus_id;
-            $date=$request->date;
+        $userId = $request->user_id;
+        $busId = $request->bus_id;
+        $date = $request->date;
+        $price = $request->price;
+// dd($busId);
+        $bus = Bus::find($busId);
+        $status = $bus->status;
+        $bus_number =$bus->bus_number;
+        // dd($bus_number);
+        $bookedSeats = SelectSeat::where('bus_id', $busId)
+            ->where('date', $date)
+            ->pluck('seat_number')
+            ->toArray();
 
-            $bus = Bus::find($busId);
-
-            $bookedSeats = SelectSeat::where('bus_id', $busId)
-                    ->where('date', $date)
-                    ->pluck('seat_number')
-                    ->toArray();
-            // Return a response indicating success
-            $client = new Client();
-            $details = [
-                'user_id' => $userId,
-                'bus_id' => $busId,
-                'date' => $date,
-                'seat_number'=>$seatNumber,
-
-
-                // Add other details as needed
-            ];
-
-            Mail::to('uminduchethiya@gmail.com')->send(new ContactFormMail($details));
+        // Return a response indicating success
+        $client = new Client();
+        $details = [
+            'user_id' => $userId,
+            'bus_id' => $bus_number,
+            'date' => $date,
+            'seat_numbers' => $allSeatNumbers, // Pass the array of seat numbers
+            // Add other details as needed
+            'price' =>$price,
+        ];
+// dd($details);
+            Mail::to('menulsuwahas@gmail.com')->send(new ContactFormMail($details));
             // Send booking confirmation email to your email address
 
 
@@ -362,7 +366,7 @@ class BusController extends Controller
                     $longitude = (float) $longitude;
                     $markers = $latitude . ', ' . $longitude;
 
-                    return view('booking.seat', compact('userId', 'busId', 'date', 'bookedSeats', 'bus', 'data', 'latitude', 'longitude', 'markers'));
+                    return view('booking.seat', compact('userId', 'busId', 'date', 'bookedSeats', 'bus', 'data', 'latitude', 'longitude', 'markers','status'));
                 } else {
                     // 'loc' key is not present in the response
                     // Handle the error or redirect accordingly
@@ -462,29 +466,38 @@ class BusController extends Controller
 
             return redirect()->back()->with('success', 'Bus deleted successfully');
     }
+    public function addDriver(){
+        $buses = Bus::all();
+        return view('admin.add-driver',compact('buses'));
+    }
+    public function send($busId) {
+        // Use $busId as needed
+        $buses = Bus::all();
 
-    // public function submitForm(Request $request)
-    // {
-    //     // Validate the form data
-    //     $request->validate([
-    //         'bus_id' => 'required|string|max:255',
-    //         'date' => 'required|email|max:255',
-    //     ]);
+        // Assuming you have a 'status' column in your buses table
+        $bus = Bus::find($busId);
 
-    //     // Send email
-    //     $details = [
-    //         'bus_id' => $request->bus_id,
-    //         'date' => $request->date,
-    //     ];
+        if ($bus) {
+            // Update the status to your desired value
+            $bus->update(['status' => 'send']);
+        }
 
-    //     // Pass the $details array to the ContactFormMail constructor
-    //     $mail = new ContactFormMail($details);
+        return view('driver.driver-home', compact('busId'));
+    }
 
-    //     // Send the email using the Mail facade
-    //     \Mail::to('uminduchethiya@gmail.com')->send($mail);
+    public function stop($busId) {
+        // Use $busId as needed
+        $buses = Bus::all();
 
-    //     // Redirect back with success message or do any other actions
-    //     return back()->with('success', 'Message sent successfully!');
-    // }
+        // Assuming you have a 'status' column in your buses table
+        $bus = Bus::find($busId);
+
+        if ($bus) {
+            // Update the status to your desired value
+            $bus->update(['status' => 'stop']);
+        }
+        return view('driver.driver-home',compact('busId'));
+    }
+
 
 }

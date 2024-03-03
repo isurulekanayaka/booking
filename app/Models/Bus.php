@@ -20,5 +20,6 @@ class Bus extends Model
         'description',
         'image',
         'price',
+        'status'
     ];
 }

@@ -4,13 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\Bus;
 use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail; // Add this import
+use App\Models\SelectSeat;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\Request;
 use App\Mail\ContactFormMail;
+use App\Mail\ContactsFormMail;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail; // Add this import
 
 
 class UserController extends Controller
@@ -19,15 +21,22 @@ class UserController extends Controller
     {
         // dd($request);
         // Validate the incoming request data
-        $validatedData=$request->validate([
+        $validatedData = $request->validate([
             'f_name' => 'required|string|max:255',
             'l_name' => 'required|string|max:255',
-            'email' => 'required|email|',
+            'email' => 'required|email',
             'phone' => 'nullable|string|max:15',
             'password' => 'required|string|min:8',
-            'user_role' => 'required|in:admin,user',
+            'user_role' => 'required|in:admin,user,driver',
             'user_status' => 'required',
+            'busId' => 'nullable',
         ]);
+        // dd($validatedData);
+        // Set default value for 'busId' if it is not provided in the request
+        if (!isset($validatedData['busId'])) {
+            $validatedData['busId'] = null;
+        }
+
         $user = User::create($validatedData);
 
         return redirect()->back()->with('success', 'User registered successfully!');
@@ -90,13 +99,29 @@ class UserController extends Controller
 
     public function login(Request $request)
     {
+        //  dd($request);
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
-            if (Auth::user()->user_role === 'admin') {
+            $userRole = Auth::user()->user_role;
+            // dd($userRole);
+            if ($userRole === 'admin') {
                 return redirect()->intended('/tmp');
-            } else {
+            } elseif ($userRole === 'user') {
                 return redirect()->intended('/');
+            } elseif ($userRole === 'driver') {
+                // dd("h");
+                $busId = Auth::user()->busId;
+        // $userId = YourUserModel::where('busId', $busId)->value('id');
+
+        // Find seat_number for the specific date and busId
+        $dateToday = now()->toDateString();
+        $seatNumbers = SelectSeat::where('bus_id', $busId)
+            ->whereDate('date', $dateToday)
+            ->pluck('seat_number');
+
+        // Pass the seat_numbers to the driver-home view
+        return view('driver.driver-home', compact('seatNumbers','busId'));
             }
         }
 
@@ -219,6 +244,17 @@ public function resetpasswordPost(Request $request){
     return redirect()->route("forgetpassword")->with("success", "Password reset successful. An email has been sent.");
 }
 
+public function send(Request $request)
+    {
+        $formData = $request->validate([
+            'name' => 'required',
+            'email' => 'required|email',
+            'textarea' => 'required',
+        ]);
 
+        Mail::to('menulsuwahas@gmail.com')->send(new ContactsFormMail($formData));
+
+        return redirect()->back()->with('success', 'Message sent successfully!');
+    }
 
 }

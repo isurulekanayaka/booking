@@ -46,7 +46,7 @@
                         <h3 class="text-2xl font-semibold text-gray-800">Sign In </h3>
                         <p class="text-gray-500">Please sign in to your account.</p>
                     </div>
-                    <form action="{{ route('login') }}" method="post" class="space-y-5 w-full">
+                    <form action="{{ route('login.post') }}" method="post" class="w-full space-y-5">
                         @csrf
                         <div class="space-y-2">
                             <label for="email" class="px-1 text-xs font-semibold">Email</label>
@@ -88,7 +88,7 @@
                         </div>
                         <a href="/forgetpassword" class="text-xs text-gray-500">Forget Password?</a>
                         </form>
-                        <div class="flex -mx-3 text-center mt-5">
+                        <div class="flex mt-5 -mx-3 text-center">
                             <div class="w-full px-3">
                                 <a href="{{ url('/register') }}" class="text-blue-500"> Register Now</a>
                             </div>

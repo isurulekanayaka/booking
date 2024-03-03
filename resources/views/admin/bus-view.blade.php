@@ -207,8 +207,13 @@
                 </div>
                 <div class="flex justify-end w-1/2">
                     <a href="{{ url('/add-bus') }}">
-                        <button class="p-2 bg-blue-500 rounded-lg hover:bg-blue-600">
+                        <button class="p-2 px-5 bg-blue-500 rounded-lg hover:bg-blue-600">
                             Bus +
+                        </button>
+                    </a>
+                    <a href="{{ url('/add-driver') }}">
+                        <button class="p-2 mx-5 bg-blue-500 rounded-lg hover:bg-blue-600">
+                            Driver +
                         </button>
                     </a>
                 </div>
@@ -220,7 +225,7 @@
                             <h2 class="text-2xl font-semibold leading-tight">Buses</h2>
                         </div>
                         <div class="flex flex-col my-2 sm:flex-row">
-                            <form method="POST" action="{{ route('bus-search') }}">
+                            <form method="POST" action="{{ route('bus-searchs') }}">
                                 @csrf
                                 <div class="flex flex-row mb-1 sm:mb-0">
                                     <div class="relative">
