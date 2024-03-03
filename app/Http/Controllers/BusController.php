@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Bus;
 use App\Models\User;
 use App\Models\SelectSeat;
+use App\Models\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use GuzzleHttp\Client;
@@ -326,6 +327,12 @@ class BusController extends Controller
         $busId = $request->bus_id;
         $date = $request->date;
         $price = $request->price;
+        Payment::create([
+            'user_id' => $userId,
+            'bus_id' => $busId,
+            'date' => $date,
+            'price' => $price,
+        ]);
 // dd($busId);
         $bus = Bus::find($busId);
         $status = $bus->status;
