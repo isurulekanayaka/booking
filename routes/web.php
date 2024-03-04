@@ -75,6 +75,8 @@ Route::get('/contacts', [UserController::class, 'send'])->name('contact.send');
 // Bus Controller
 Route::post('/busregister', [BusController::class, 'register'])->name('busregister');
 Route::post('/bus-search', [BusController::class, 'search'])->name('bus-search');
+
+Route::get('/bus-search', [BusController::class, 'search'])->name('bus-search');
 Route::match(['get', 'post'], '/bus-seat', [BusController::class, 'seat'])->name('bus-seat');
 Route::post('/select-seat', [BusController::class, 'select'])->name('select-seat');
 
