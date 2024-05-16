@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ContactFormMail;
-
+use App\Models\BookingDetail;
 use GuzzleHttp\Exception\RequestException;
 
 class BusController extends Controller
@@ -20,34 +20,34 @@ class BusController extends Controller
     {
         // Retrieve all buses from the database
         $buses = Bus::all();
-        $users= User::all();
-        $ticket= SelectSeat::all();
+        $users = User::all();
+        $ticket = SelectSeat::all();
 
         $busesCount = Bus::count();
         $usersCount = User::count();
         $ticketCount = SelectSeat::count();
 
         // Pass the retrieved buses data to the view
-        return view('admin.template', compact('buses','users','busesCount','usersCount','ticket','ticketCount'));
+        return view('admin.template', compact('buses', 'users', 'busesCount', 'usersCount', 'ticket', 'ticketCount'));
     }
     public function searchTicket(Request $request)
     {
         //  dd($request);
-         if ($request->bus != null) {
+        if ($request->bus != null) {
             $ticket = SelectSeat::where('bus_id', $request->bus)->get();
         } else if ($request->datepicker != null) {
             $ticket = SelectSeat::where('date', $request->datepicker)->get();
         } else if ($request->datepicker != null && $request->bus != null) {
             $ticket = SelectSeat::where('bus_id', $request->bus)
-                                ->whereDate('date', $request->datepicker)
-                                ->get();
+                ->whereDate('date', $request->datepicker)
+                ->get();
         } else {
             $ticket = SelectSeat::all();
         }
 
         $bus = Bus::all();
         $buses = Bus::all();
-        $users= User::all();
+        $users = User::all();
 
         $busesCount = Bus::count();
         $usersCount = User::count();
@@ -56,28 +56,27 @@ class BusController extends Controller
         $pagination = $request->rowsPerPage;
 
         // Pass the retrieved buses data to the view
-        return view('admin.root-view', compact('buses','users','busesCount','usersCount','ticket','ticketCount','pagination','bus'));
-
+        return view('admin.root-view', compact('buses', 'users', 'busesCount', 'usersCount', 'ticket', 'ticketCount', 'pagination', 'bus'));
     }
     public function searchUser(Request $request)
     {
         //  dd($request);
 
-        if ($request->userRole != null){
-            $users= User::where('user_role', $request->userRole)->get();
-        }elseif ($request->username != null) {
+        if ($request->userRole != null) {
+            $users = User::where('user_role', $request->userRole)->get();
+        } elseif ($request->username != null) {
             $users = User::where('f_name', 'LIKE', '%' . $request->username . '%')
-                         ->orWhere('l_name', 'LIKE', '%' . $request->username . '%')
-                         ->get();
-        }elseif(($request->userRole != null)&&($request->username != null)){
+                ->orWhere('l_name', 'LIKE', '%' . $request->username . '%')
+                ->get();
+        } elseif (($request->userRole != null) && ($request->username != null)) {
             $users = User::where('user_role', $request->userRole)
-                 ->where(function ($query) use ($request) {
-                     $query->where('f_name', 'LIKE', '%' . $request->username . '%')
-                           ->orWhere('l_name', 'LIKE', '%' . $request->username . '%');
-                 })
-                 ->get();
-        }else{
-            $users= User::all();
+                ->where(function ($query) use ($request) {
+                    $query->where('f_name', 'LIKE', '%' . $request->username . '%')
+                        ->orWhere('l_name', 'LIKE', '%' . $request->username . '%');
+                })
+                ->get();
+        } else {
+            $users = User::all();
         }
         $ticket = SelectSeat::all();
         $buses = Bus::all();
@@ -89,8 +88,7 @@ class BusController extends Controller
         $pagination = $request->rowsPerPage;
 
         // Pass the retrieved buses data to the view
-        return view('admin.user-view', compact('buses','users','busesCount','usersCount','ticket','ticketCount','pagination'));
-
+        return view('admin.user-view', compact('buses', 'users', 'busesCount', 'usersCount', 'ticket', 'ticketCount', 'pagination'));
     }
     public function searchBus(Request $request)
     {
@@ -102,15 +100,15 @@ class BusController extends Controller
             $buses = Bus::where('end', $request->to)->get();
         } elseif ($request->from != null && $request->to != null) {
             $buses = Bus::where('start', $request->from)
-                        ->orWhere('end', $request->to)
-                        ->get();
+                ->orWhere('end', $request->to)
+                ->get();
         } else {
             $buses = Bus::all();
         }
 
         $ticket = SelectSeat::all();
 
-        $users= User::all();
+        $users = User::all();
         $busesCount = Bus::count();
         $usersCount = User::count();
         $ticketCount = SelectSeat::count();
@@ -118,30 +116,29 @@ class BusController extends Controller
         $pagination = $request->rowsPerPage;
 
         // Pass the retrieved buses data to the view
-        return view('admin.bus-view', compact('buses','users','busesCount','usersCount','ticket','ticketCount','pagination'));
-
+        return view('admin.bus-view', compact('buses', 'users', 'busesCount', 'usersCount', 'ticket', 'ticketCount', 'pagination'));
     }
     public function userview(Request $request)
     {
-       // Retrieve all buses from the database
-       $buses = Bus::all();
-       $users= User::all();
-       $ticket= SelectSeat::all();
+        // Retrieve all buses from the database
+        $buses = Bus::all();
+        $users = User::all();
+        $ticket = SelectSeat::all();
 
-       $busesCount = Bus::count();
-       $usersCount = User::count();
-       $ticketCount = SelectSeat::count();
-       $pagination = 5;
+        $busesCount = Bus::count();
+        $usersCount = User::count();
+        $ticketCount = SelectSeat::count();
+        $pagination = 5;
 
-       // Pass the retrieved buses data to the view
-       return view('admin.user-view', compact('buses','users','busesCount','usersCount','ticket','ticketCount','pagination'));
+        // Pass the retrieved buses data to the view
+        return view('admin.user-view', compact('buses', 'users', 'busesCount', 'usersCount', 'ticket', 'ticketCount', 'pagination'));
     }
     public function busview(Request $request)
-        {
+    {
         // Retrieve all buses from the database
         $buses = Bus::all();
-        $users= User::all();
-        $ticket= SelectSeat::all();
+        $users = User::all();
+        $ticket = SelectSeat::all();
 
         $busesCount = Bus::count();
         $usersCount = User::count();
@@ -150,14 +147,14 @@ class BusController extends Controller
 
 
         // Pass the retrieved buses data to the view
-        return view('admin.bus-view', compact('buses','users','busesCount','usersCount','ticket','ticketCount','pagination'));
+        return view('admin.bus-view', compact('buses', 'users', 'busesCount', 'usersCount', 'ticket', 'ticketCount', 'pagination'));
     }
     public function rootview(Request $request)
-        {
+    {
         // Retrieve all buses from the database
         $buses = Bus::all();
-        $users= User::all();
-        $ticket= SelectSeat::all();
+        $users = User::all();
+        $ticket = SelectSeat::all();
 
         $busesCount = Bus::count();
         $usersCount = User::count();
@@ -166,7 +163,7 @@ class BusController extends Controller
         $pagination = 5;
 
         // Pass the retrieved buses data to the view
-        return view('admin.root-view', compact('pagination','buses','users','busesCount','usersCount','ticket','ticketCount'));
+        return view('admin.root-view', compact('pagination', 'buses', 'users', 'busesCount', 'usersCount', 'ticket', 'ticketCount'));
     }
 
     public function register(Request $request)
@@ -180,7 +177,7 @@ class BusController extends Controller
             'start' => 'required',
             'starttime' => 'required',
             'end' => 'required',
-            'price'=>'required',
+            'price' => 'required',
             'endtime' => 'required',
             'description' => 'required',
             'image' => 'required|image', // Assuming maximum file size is 2MB and only image files are allowed
@@ -224,7 +221,7 @@ class BusController extends Controller
 
         // Query to filter buses based on search parameters
         $busesQuery = Bus::query();
-        $busx=Bus::all();
+        $busx = Bus::all();
 
         // Apply filters if search parameters are provided
         if ($from) {
@@ -241,7 +238,7 @@ class BusController extends Controller
         $buses = $busesQuery->get();
 
         // Pass the buses to the view
-        return view('booking.booking', compact('buses','busx'));
+        return view('booking.booking', compact('buses', 'busx'));
     }
 
     public function seat(Request $request)
@@ -277,7 +274,7 @@ class BusController extends Controller
                     $longitude = (float) $longitude;
                     $markers = $latitude . ', ' . $longitude;
 
-                    return view('booking.seat', compact('userId', 'busId', 'date', 'bookedSeats', 'bus', 'data', 'latitude', 'longitude', 'markers','status'));
+                    return view('booking.seat', compact('userId', 'busId', 'date', 'bookedSeats', 'bus', 'data', 'latitude', 'longitude', 'markers', 'status'));
                 } else {
                     // 'loc' key is not present in the response
                     // Handle the error or redirect accordingly
@@ -317,49 +314,61 @@ class BusController extends Controller
                         'pay-button'
                     ]);
 
-        $allSeatNumbers[] = $seatNumber;
+                    $allSeatNumbers[] = $seatNumber;
                 }
-
-
             }
 
-        $userId = $request->user_id;
-        $busId = $request->bus_id;
-        $date = $request->date;
-        $price = $request->price;
-        Payment::create([
-            'user_id' => $userId,
-            'bus_id' => $busId,
-            'date' => $date,
-            'price' => $price,
-        ]);
-// dd($busId);
-        $bus = Bus::find($busId);
-        $status = $bus->status;
-        $bus_number =$bus->bus_number;
-        // dd($bus_number);
-        $bookedSeats = SelectSeat::where('bus_id', $busId)
-            ->where('date', $date)
-            ->pluck('seat_number')
-            ->toArray();
+            $userId = $request->user_id;
+            $busId = $request->bus_id;
+            $date = $request->date;
+            $price = $request->price;
+            $payment = Payment::create([
+                'user_id' => $userId,
+                'bus_id' => $busId,
+                'date' => $date,
+                'price' => $price,
+            ]);
+            // dd($payment->id,);
 
-        // Return a response indicating success
-        $client = new Client();
-        $details = [
-            'user_id' => $userId,
-            'bus_id' => $bus_number,
-            'date' => $date,
-            'seat_numbers' => $allSeatNumbers, // Pass the array of seat numbers
-            // Add other details as needed
-            'price' =>$price,
-        ];
-// dd($details);
+            $bus = Bus::find($busId);
+            $status = $bus->status;
+            $bus_number = $bus->bus_number;
+            // dd($bus_number);
+            $bookedSeats = SelectSeat::where('bus_id', $busId)
+                ->where('date', $date)
+                ->pluck('seat_number')
+                ->toArray();
+
+            // Return a response indicating success
+            $client = new Client();
+            $details = [
+                'user_id' => $userId,
+                'bus_id' => $bus_number,
+                'date' => $date,
+                'seat_numbers' => $allSeatNumbers, // Pass the array of seat numbers
+                // Add other details as needed
+                'price' => $price,
+            ];
+            // dd($details);
             Mail::to('menulsuwahas@gmail.com')->send(new ContactFormMail($details));
             // Send booking confirmation email to your email address
 
 
             $ipAddress = $request->input('ip_address');
             $apiKey = '6228418ade5911';
+
+            // add new table
+            $details = [
+                'user_id' => $userId,
+                'bus_id' => $bus_number,
+                'date' => $date,
+                'seat_numbers' => $allSeatNumbers,
+                'payment_id' => $payment->id,
+                'price' => $price,
+            ];
+            
+            BookingDetail::create($details);
+            
 
             try {
                 $url = "https://ipinfo.io/{$ipAddress}/json?token={$apiKey}";
@@ -373,7 +382,7 @@ class BusController extends Controller
                     $longitude = (float) $longitude;
                     $markers = $latitude . ', ' . $longitude;
 
-                    return view('booking.seat', compact('userId', 'busId', 'date', 'bookedSeats', 'bus', 'data', 'latitude', 'longitude', 'markers','status'));
+                    return view('booking.seat', compact('userId', 'busId', 'date', 'bookedSeats', 'bus', 'data', 'latitude', 'longitude', 'markers', 'status'));
                 } else {
                     // 'loc' key is not present in the response
                     // Handle the error or redirect accordingly
@@ -393,7 +402,7 @@ class BusController extends Controller
     {
         $bus = Bus::find($id);
         // dd($bus);
-        if(!$bus) {
+        if (!$bus) {
             abort(404);
         }
 
@@ -404,7 +413,7 @@ class BusController extends Controller
     {
         $bus = Bus::find($id);
 
-        if(!$bus) {
+        if (!$bus) {
             abort(404);
         }
 
@@ -416,7 +425,7 @@ class BusController extends Controller
     {
         $bus = Bus::find($id);
 
-        if(!$bus) {
+        if (!$bus) {
             abort(404);
         }
 
@@ -451,12 +460,13 @@ class BusController extends Controller
         return redirect()->back()->with('success', 'Bus details updated successfully');
     }
 
-    public function addUser(){
+    public function addUser()
+    {
         $buses = Bus::all();
 
-        return view('admin.add-user',compact('buses'));
+        return view('admin.add-user', compact('buses'));
     }
-    public function edit(Request $request,$id)
+    public function edit(Request $request, $id)
     {
         // dd($id);
     }
@@ -465,19 +475,21 @@ class BusController extends Controller
     {
         $SelectSeat = SelectSeat::find($id);
 
-            if(!$SelectSeat) {
-                abort(404);
-            }
+        if (!$SelectSeat) {
+            abort(404);
+        }
 
-            $SelectSeat->delete();
+        $SelectSeat->delete();
 
-            return redirect()->back()->with('success', 'Bus deleted successfully');
+        return redirect()->back()->with('success', 'Bus deleted successfully');
     }
-    public function addDriver(){
+    public function addDriver()
+    {
         $buses = Bus::all();
-        return view('admin.add-driver',compact('buses'));
+        return view('admin.add-driver', compact('buses'));
     }
-    public function send($busId) {
+    public function send($busId)
+    {
         // Use $busId as needed
         $buses = Bus::all();
 
@@ -492,7 +504,8 @@ class BusController extends Controller
         return view('driver.driver-home', compact('busId'));
     }
 
-    public function stop($busId) {
+    public function stop($busId)
+    {
         // Use $busId as needed
         $buses = Bus::all();
 
@@ -503,8 +516,6 @@ class BusController extends Controller
             // Update the status to your desired value
             $bus->update(['status' => 'stop']);
         }
-        return view('driver.driver-home',compact('busId'));
+        return view('driver.driver-home', compact('busId'));
     }
-
-
 }
